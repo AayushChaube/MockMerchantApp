@@ -1,3 +1,31 @@
 <resources>
     <string name="app_name">Mock Merchant Application</string>
+    <string name="app_bar_title">Mock Merchant App</string>
+    <string name="no_data_found">No data found!</string>
+    <string name="extendedFloatingActionButton_content_description">Create in app payment deep link URL</string>
+    <string name="extendedFloatingActionButton_text">Create</string>
+    <string name="create_url_app_bar_title">Create URL</string>
+    <string name="materialButton_create_url_text">Submit</string>
+
+    <!--    Creation Form-->
+    <string name="payee_vpa_label">Payee VPA</string>
+    <string name="payee_vpa_helper_text">Receiver\'s/Merchant\'s VPA/UPI ID</string>
+    <string name="invalid_vpa_format">Invalid VPA format. Use: username@bankname</string>
+    <string name="vpa_required">VPA is required</string>
+    <string name="materialButton_make_payment">Make payment</string>
+    <string name="payee_name_label">Payee name</string>
+    <string name="payee_name_helper_text">Receiver\'s/Merchant\'s name</string>
+    <string name="payee_mcc_label">Payee MCC</string>
+    <string name="payee_mcc_helper_text">Receiver\'s/Merchant\'s Category Code</string>
+    <string name="transaction_id">Transaction ID</string>
+    <string name="transaction_reference_label">Transaction reference</string>
+    <string name="transaction_reference_helper_text">Transaction reference</string>
+    <string name="transaction_note_label">Transaction note</string>
+    <string name="transaction_note_helper_text">Transaction note (remarks/additional note)</string>
+    <string name="payee_amount_label">Payee amount</string>
+    <string name="payee_amount_helper_text">Receiver\'s/Merchant\'s amount</string>
+    <string name="payee_currency_label">Payee currency</string>
+    <string name="payee_currency_helper_text">Receiver\'s/Merchant\'s currency</string>
+    <string name="payee_app_id">Payee application ID</string>
+    <string name="payee_app_name">Payee application name</string>
 </resources>

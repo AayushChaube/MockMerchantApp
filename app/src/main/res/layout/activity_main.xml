@@ -7,13 +7,283 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout_main"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:theme="@style/Theme.MockMerchantApplication">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/materialToolbar_main"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="@string/app_bar_title"
+            app:titleCentered="true" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!--    <com.google.android.material.loadingindicator.LoadingIndicator-->
+    <!--        android:id="@+id/loadingIndicator_main"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:visibility="gone"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/appBarLayout_main" />-->
+
+    <!--    <com.google.android.material.textview.MaterialTextView-->
+    <!--        android:id="@+id/materialTextView_no_data_found"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="@string/no_data_found"-->
+    <!--        android:visibility="gone"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/appBarLayout_main" />-->
+
+    <!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+    <!--        android:id="@+id/extendedFloatingActionButton"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="16dp"-->
+    <!--        android:contentDescription="@string/extendedFloatingActionButton_content_description"-->
+    <!--        android:text="@string/extendedFloatingActionButton_text"-->
+    <!--        android:visibility="gone"-->
+    <!--        app:icon="@drawable/add_24px"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        app:layout_constraintBottom_toTopOf="@id/materialButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout_main">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout_scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout_payee_vpa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/payee_vpa_label"
+                app:errorEnabled="true"
+                app:helperText="@string/payee_vpa_helper_text"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditText_payee_vpa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="textEmailAddress|textNoSuggestions"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout_payee_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/payee_name_label"
+                app:helperText="@string/payee_name_helper_text"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_vpa">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditText_payee_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout_payee_mcc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/payee_mcc_label"
+                app:helperText="@string/payee_mcc_helper_text"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_name">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditText_payee_mcc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView_transaction_id_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/transaction_id"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_mcc" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView_transaction_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView_transaction_id_title" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout_transaction_reference"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/transaction_reference_label"
+                app:helperText="@string/transaction_reference_helper_text"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView_transaction_id">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditText_transaction_reference"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout_transaction_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/transaction_note_label"
+                app:helperText="@string/transaction_note_helper_text"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_transaction_reference">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditText_transaction_note"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout_payee_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/payee_amount_label"
+                app:helperText="@string/payee_amount_helper_text"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_transaction_note">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditText_payee_amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout_payee_currency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/payee_currency_label"
+                app:helperText="@string/payee_currency_helper_text"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_amount">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditText_payee_currency"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView_payee_app_id_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/payee_app_id"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_currency" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView_payee_app_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView_payee_app_id_title" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView_payee_app_name_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/payee_app_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView_payee_app_id" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView_payee_app_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView_payee_app_name_title" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/materialButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
+        android:enabled="false"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:text="@string/materialButton_make_payment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
