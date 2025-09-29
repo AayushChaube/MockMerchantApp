@@ -1,7 +1,8 @@
-package com.aayushchaube.mockmerchantapplication
+package com.aayushchaube.mockmerchantapplication.watchers
 
 import android.text.Editable
 import android.text.TextWatcher
+import com.aayushchaube.mockmerchantapplication.singletons.VPAValidator
 import com.google.android.material.textfield.TextInputLayout
 
 class VPATextWatcher(

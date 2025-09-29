@@ -1,5 +1,6 @@
-package com.aayushchaube.mockmerchantapplication
+package com.aayushchaube.mockmerchantapplication.singletons
 
+import com.aayushchaube.mockmerchantapplication.models.ValidationResult
 import java.util.regex.Pattern
 
 object VPAValidator {

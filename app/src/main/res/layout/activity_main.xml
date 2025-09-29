@@ -108,6 +108,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
                 android:hint="@string/payee_name_label"
+                app:errorEnabled="true"
                 app:helperText="@string/payee_name_helper_text"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -117,7 +118,13 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textInputEditText_payee_name"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ .'-"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPersonName|textCapWords"
+                    android:maxLength="100"
+                    android:maxLines="1"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -126,6 +133,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
                 android:hint="@string/payee_mcc_label"
+                app:errorEnabled="true"
                 app:helperText="@string/payee_mcc_helper_text"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -135,7 +143,13 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textInputEditText_payee_mcc"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:maxLines="1"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textview.MaterialTextView
@@ -164,6 +178,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
                 android:hint="@string/transaction_reference_label"
+                app:endIconContentDescription="@string/transaction_end_icon_content_description"
+                app:endIconDrawable="@drawable/refresh_24px"
+                app:endIconMode="custom"
+                app:endIconTint="?attr/colorPrimary"
+                app:errorEnabled="true"
                 app:helperText="@string/transaction_reference_helper_text"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -173,7 +192,16 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textInputEditText_transaction_reference"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:imeOptions="actionNext"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textAllCaps="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -182,6 +210,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
                 android:hint="@string/transaction_note_label"
+                app:counterEnabled="true"
+                app:counterMaxLength="280"
+                app:errorEnabled="true"
                 app:helperText="@string/transaction_note_helper_text"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -191,7 +222,15 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textInputEditText_transaction_note"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:gravity="top|start"
+                    android:imeOptions="actionDone"
+                    android:inputType="textCapSentences|textMultiLine|textNoSuggestions"
+                    android:maxLength="280"
+                    android:maxLines="6"
+                    android:minLines="3"
+                    android:scrollbars="vertical"
+                    android:scrollHorizontally="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -200,6 +239,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
                 android:hint="@string/payee_amount_label"
+                app:errorEnabled="true"
                 app:helperText="@string/payee_amount_helper_text"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -209,7 +249,13 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textInputEditText_payee_amount"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789."
+                    android:gravity="start"
+                    android:imeOptions="actionNext"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
