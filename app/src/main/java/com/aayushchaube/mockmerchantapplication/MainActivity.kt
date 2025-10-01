@@ -1,8 +1,12 @@
 package com.aayushchaube.mockmerchantapplication
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
+import android.util.Log
 import android.view.inputmethod.EditorInfo
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -120,6 +124,8 @@ class MainActivity : AppCompatActivity() {
         generateNewTransactionReference()
         // Set default currency (INR for Indian users)
         setDefaultCurrency("INR")
+
+        onPaymentButtonClick();
     }
 
     private fun initializeViews() {
@@ -219,7 +225,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Method to get validated VPA
-    fun getValidatedVPA(): String? {
+    private fun getValidatedVPA(): String? {
         return if (isVPAValid) {
             VPAValidator.formatVPA(textInputEditTextPayeeVPA.text.toString())
         } else {
@@ -334,7 +340,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Method to get validated and formatted name
-    fun getValidatedName(): String? {
+    private fun getValidatedName(): String? {
         return if (isNameValid) {
             NameValidator.formatName(textInputEditTextPayeeName.text.toString())
         } else {
@@ -444,7 +450,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Method to get validated MCC
-    fun getValidatedMCC(): String? {
+    private fun getValidatedMCC(): String? {
         return if (isMCCValid) {
             MCCValidator.formatMCC(textInputEditTextPayeeMCC.text.toString())
         } else {
@@ -598,7 +604,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Method to get the current transaction reference
-    fun getCurrentTransactionID(): String? {
+    private fun getCurrentTransactionID(): String? {
         return if (isTransactionIDValid) {
             textInputEditTextTransactionID.text.toString()
         } else {
@@ -610,10 +616,6 @@ class MainActivity : AppCompatActivity() {
     fun isIDGenerated(): Boolean {
         return isTransactionIDGenerated
     }
-
-    /** Returns validated Transaction ID or null */
-    fun getTransactionId(): String? =
-        if (isTransactionIDValid) textInputEditTextTransactionID.text?.toString()?.trim() else null
 
     private fun configureTransactionReferenceKeyboard() {
         textInputEditTextTransactionReference.apply {
@@ -759,7 +761,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Method to get the current transaction reference
-    fun getCurrentTransactionReference(): String? {
+    private fun getCurrentTransactionReference(): String? {
         return if (isTransactionReferenceValid) {
             textInputEditTextTransactionReference.text.toString()
         } else {
@@ -909,7 +911,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Method to get validated transaction note
-    fun getValidatedTransactionNote(): String? {
+    private fun getValidatedTransactionNote(): String? {
         return if (isTransactionNoteValid) {
             val noteText = textInputEditTextTransactionNote.text.toString()
             if (noteText.isBlank()) null else TransactionNoteValidator.formatTransactionNote(
@@ -929,6 +931,14 @@ class MainActivity : AppCompatActivity() {
     private fun showNoteTemplates() {
         val templates = TransactionNoteValidator.getCommonNoteTemplates()
         // Could show a dialog with common note templates for user selection
+    }
+
+    private fun getValidatedAmount(): String? {
+        if (isAmountValid) {
+            return textInputEditTextPayeeAmount.text.toString()
+        } else {
+            return null
+        }
     }
 
     private fun setupCurrencyDropdown() {
@@ -1032,7 +1042,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Method to get currency code
-    fun getSelectedCurrencyCode(): String? {
+    private fun getSelectedCurrencyCode(): String? {
         return selectedCurrency?.code
     }
 
@@ -1056,7 +1066,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Returns validated App-ID or null */
-    fun getPayeeAppID(): String? =
+    private fun getPayeeAppID(): String? =
         if (isAppIDValid) textInputEditTextPayeeAppID.text?.toString()?.trim() else null
 
     private fun setupAppNameValidation() {
@@ -1139,7 +1149,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Method to get validated app name
-    fun getValidatedAppName(): String? {
+    private fun getValidatedAppName(): String? {
         return if (isAppNameValid) {
             AppNameValidator.formatAppName(textInputEditTextPayeeAppName.text.toString())
         } else {
@@ -1170,5 +1180,64 @@ class MainActivity : AppCompatActivity() {
     private fun setupButtonState() {
         // Initially disable the button
         materialButton.isEnabled = false
+    }
+
+    private fun onPaymentButtonClick() {
+        materialButton.setOnClickListener {
+            Log.d("setOnClickListener", "Clicked")
+            val urlBuilder = StringBuilder()
+
+            urlBuilder.append(deepLinkingURLBase).append("?")
+                .append("pa").append("=").append(getValidatedVPA()).append("&")
+                .append("pn").append("=").append(getValidatedName()).append("&")
+                .append("mc").append("=").append(getValidatedMCC()).append("&")
+                .append("ti").append("=").append(getCurrentTransactionID()).append("&")
+                .append("tr").append("=").append(getCurrentTransactionReference()).append("&")
+                .append("tn").append("=").append(getValidatedTransactionNote()).append("&")
+                .append("am").append("=").append(getValidatedAmount()).append("&")
+                .append("cu").append("=").append(getSelectedCurrencyCode()).append("&")
+                .append("appid").append("=").append(getPayeeAppID()).append("&")
+                .append("appname").append("=").append(getValidatedAppName())
+
+            val deepLinkUrl = urlBuilder.toString()
+            Log.d("Deep Link Url", deepLinkUrl)
+
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(deepLinkUrl)
+
+            val title = "Pay with..."
+            // Create intent to show chooser. It will display the list of available PSP apps (which
+            // have the same url in the manifest)
+
+            val chooser = Intent.createChooser(intent, title)
+            // Verify the intent will resolve to at least one activity
+
+            Log.d(
+                "setOnClickListener",
+                "is resolveActivity NULL:  ${intent.resolveActivity(packageManager) == null}"
+            )
+
+            startActivityForResult(chooser, 1)
+
+            Log.d("setOnClickListener", "END")
+        }
+    }
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        responseIntent: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, responseIntent)
+        Log.d("onActivityResult", "ENTERED")
+        Log.d("onActivityResult", "requestCode:  $requestCode")
+
+        if (requestCode == 1) {
+            Log.d("onActivityResult", "requestCode:  1")
+            // extract the response code and other fields from the received intent
+//            processResponseIntent(responseIntent);
+        }
+
+        Log.d("onActivityResult", "END")
     }
 }
