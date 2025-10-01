@@ -24,7 +24,6 @@ object AmountValidator {
         if (value > MAX_AMOUNT) {
             return ValidationResult(false, "Amount cannot exceed ₹${"%,.2f".format(MAX_AMOUNT)}")
         }
-
         return ValidationResult(true, null)
     }
 }

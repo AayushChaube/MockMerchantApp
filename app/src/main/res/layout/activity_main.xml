@@ -28,39 +28,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!--    <com.google.android.material.loadingindicator.LoadingIndicator-->
-    <!--        android:id="@+id/loadingIndicator_main"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:visibility="gone"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/appBarLayout_main" />-->
-
-    <!--    <com.google.android.material.textview.MaterialTextView-->
-    <!--        android:id="@+id/materialTextView_no_data_found"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="@string/no_data_found"-->
-    <!--        android:visibility="gone"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/appBarLayout_main" />-->
-
-    <!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
-    <!--        android:id="@+id/extendedFloatingActionButton"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_margin="16dp"-->
-    <!--        android:contentDescription="@string/extendedFloatingActionButton_content_description"-->
-    <!--        android:text="@string/extendedFloatingActionButton_text"-->
-    <!--        android:visibility="gone"-->
-    <!--        app:icon="@drawable/add_24px"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent" />-->
-
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -152,25 +119,37 @@
                     android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/materialTextView_transaction_id_title"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout_transaction_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="@string/transaction_id"
+                android:hint="@string/transaction_id_label"
+                app:endIconContentDescription="@string/transaction_id_end_icon_content_description"
+                app:endIconDrawable="@drawable/refresh_24px"
+                app:endIconMode="custom"
+                app:endIconTint="?attr/colorPrimary"
+                app:errorEnabled="true"
+                app:helperText="@string/transaction_id_helper_text"
+                app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_mcc" />
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_mcc">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/materialTextView_transaction_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:layout_marginBottom="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialTextView_transaction_id_title" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditText_transaction_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:imeOptions="actionNext"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    android:maxLength="35"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textAllCaps="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout_transaction_reference"
@@ -187,7 +166,7 @@
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialTextView_transaction_id">
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_transaction_id">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textInputEditText_transaction_reference"
@@ -260,61 +239,78 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout_payee_currency"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
                 android:hint="@string/payee_currency_label"
+                app:endIconMode="dropdown_menu"
+                app:errorEnabled="true"
                 app:helperText="@string/payee_currency_helper_text"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_amount">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/textInputEditText_payee_currency"
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/materialAutoCompleteTextView_payee_currency"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:inputType="none"
+                    android:maxLines="1"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/materialTextView_payee_app_id_title"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout_payee_app_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/payee_app_id"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/payee_app_id_label"
+                app:errorEnabled="true"
+                app:helperText="@string/payee_app_id_helper_text"
+                app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_currency" />
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_currency">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/materialTextView_payee_app_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:layout_marginBottom="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialTextView_payee_app_id_title" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditText_payee_app_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:digits="abcdefghijklmnopqrstuvwxyz0123456789._"
+                    android:imeOptions="actionNext"
+                    android:inputType="textNoSuggestions|textVisiblePassword"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:text="@string/payee_app_id_text" />                 <!-- Prefill here -->
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/materialTextView_payee_app_name_title"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout_payee_app_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/payee_app_name"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/payee_app_name_label"
+                app:errorEnabled="true"
+                app:helperText="@string/payee_app_name_helper_text"
+                app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialTextView_payee_app_id" />
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout_payee_app_id">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/materialTextView_payee_app_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:layout_marginBottom="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialTextView_payee_app_name_title" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditText_payee_app_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapWords|textAutoComplete"
+                    android:maxLength="50"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:text="@string/payee_app_name_text" />                 <!-- Prefill here -->
+            </com.google.android.material.textfield.TextInputLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

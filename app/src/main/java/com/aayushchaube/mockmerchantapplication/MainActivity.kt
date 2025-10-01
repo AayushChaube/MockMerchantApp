@@ -8,25 +8,32 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.aayushchaube.mockmerchantapplication.adapters.CurrencyDropdownAdapter
 import com.aayushchaube.mockmerchantapplication.enums.ReferenceFormat
 import com.aayushchaube.mockmerchantapplication.enums.ReferenceType
 import com.aayushchaube.mockmerchantapplication.models.CharacterInfo
+import com.aayushchaube.mockmerchantapplication.models.CurrencyInfo
+import com.aayushchaube.mockmerchantapplication.singletons.AppNameValidator
+import com.aayushchaube.mockmerchantapplication.singletons.CurrencyValidator
 import com.aayushchaube.mockmerchantapplication.singletons.MCCValidator
 import com.aayushchaube.mockmerchantapplication.singletons.NameValidator
+import com.aayushchaube.mockmerchantapplication.singletons.SecureTransactionIDGenerator
 import com.aayushchaube.mockmerchantapplication.singletons.SecureTransactionReferenceGenerator
 import com.aayushchaube.mockmerchantapplication.singletons.TransactionNoteValidator
-import com.aayushchaube.mockmerchantapplication.singletons.TransactionReferenceValidator
 import com.aayushchaube.mockmerchantapplication.singletons.VPAValidator
 import com.aayushchaube.mockmerchantapplication.watchers.AmountTextWatcher
+import com.aayushchaube.mockmerchantapplication.watchers.AppIDTextWatcher
+import com.aayushchaube.mockmerchantapplication.watchers.AppNameTextWatcher
 import com.aayushchaube.mockmerchantapplication.watchers.MCCTextWatcher
 import com.aayushchaube.mockmerchantapplication.watchers.NameTextWatcher
+import com.aayushchaube.mockmerchantapplication.watchers.TransactionIDTextWatcher
 import com.aayushchaube.mockmerchantapplication.watchers.TransactionNoteTextWatcher
 import com.aayushchaube.mockmerchantapplication.watchers.TransactionReferenceTextWatcher
 import com.aayushchaube.mockmerchantapplication.watchers.VPATextWatcher
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.google.android.material.textview.MaterialTextView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textInputLayoutPayeeVPA: TextInputLayout
@@ -35,7 +42,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var textInputEditTextPayeeName: TextInputEditText
     private lateinit var textInputLayoutPayeeMCC: TextInputLayout
     private lateinit var textInputEditTextPayeeMCC: TextInputEditText
-    private lateinit var materialTextViewTransactionID: MaterialTextView
+    private lateinit var textInputLayoutTransactionID: TextInputLayout
+    private lateinit var textInputEditTextTransactionID: TextInputEditText
     private lateinit var textInputLayoutTransactionReference: TextInputLayout
     private lateinit var textInputEditTextTransactionReference: TextInputEditText
     private lateinit var textInputLayoutTransactionNote: TextInputLayout
@@ -43,21 +51,31 @@ class MainActivity : AppCompatActivity() {
     private lateinit var textInputLayoutPayeeAmount: TextInputLayout
     private lateinit var textInputEditTextPayeeAmount: TextInputEditText
     private lateinit var textInputLayoutPayeeCurrency: TextInputLayout
-    private lateinit var textInputEditTextPayeeCurrency: TextInputEditText
-    private lateinit var materialTextViewPayeeAppID: MaterialTextView
-    private lateinit var materialTextViewPayeeAppName: MaterialTextView
+    private lateinit var materialAutoCompleteTextViewPayeeCurrency: MaterialAutoCompleteTextView
+    private lateinit var textInputLayoutPayeeAppID: TextInputLayout
+    private lateinit var textInputEditTextPayeeAppID: TextInputEditText
+    private lateinit var textInputLayoutPayeeAppName: TextInputLayout
+    private lateinit var textInputEditTextPayeeAppName: TextInputEditText
     private lateinit var materialButton: MaterialButton
+
+    private lateinit var currencyAdapter: CurrencyDropdownAdapter
 
     private var isVPAValid = false
     private var isNameValid = false
     private var isMCCValid = false
     private var currentMCCCategory: String? = null
+    private var isTransactionIDValid = false
+    private var isTransactionIDGenerated = false
     private var isTransactionReferenceValid = false
     private var currentReferenceType: ReferenceType? = null
     private var isCurrentReferenceGenerated = false
     private var isTransactionNoteValid = false
     private var currentCharacterInfo: CharacterInfo? = null
     private var isAmountValid = false
+    private var isCurrencyValid = false
+    private var selectedCurrency: CurrencyInfo? = null
+    private var isAppIDValid = true            // starts true because pre-filled is valid
+    private var isAppNameValid = true // Start as valid since pre-filled
 
     private val deepLinkingURLBase: String = "upi://pay"
 
@@ -74,11 +92,13 @@ class MainActivity : AppCompatActivity() {
         configureVPAKeyboard()
         configureNameKeyboard()
         configureMCCKeyboard()
+        configureTransactionIDKeyboard()
         configureTransactionReferenceKeyboard()
         configureTransactionNoteKeyboard()
         setupVPAValidation()
         setupNameValidation()
         setupMCCValidation()
+        setupTransactionIDValidation()
         setupTransactionReferenceWithGenerator()
         setupTransactionNoteValidation()
         // Attach TextWatcher
@@ -89,10 +109,17 @@ class MainActivity : AppCompatActivity() {
                 isAmountValid = valid
                 updateButtonState()
             })
+        setupCurrencyDropdown()
+        setupAppIDValidation()
+        setupAppNameValidation()
         setupButtonState()
 
+        // Generate initial ID
+        generateNewTransactionID()
         // Generate initial reference
         generateNewTransactionReference()
+        // Set default currency (INR for Indian users)
+        setDefaultCurrency("INR")
     }
 
     private fun initializeViews() {
@@ -102,7 +129,8 @@ class MainActivity : AppCompatActivity() {
         textInputEditTextPayeeName = findViewById(R.id.textInputEditText_payee_name)
         textInputLayoutPayeeMCC = findViewById(R.id.textInputLayout_payee_mcc)
         textInputEditTextPayeeMCC = findViewById(R.id.textInputEditText_payee_mcc)
-        materialTextViewTransactionID = findViewById(R.id.materialTextView_transaction_id)
+        textInputLayoutTransactionID = findViewById(R.id.textInputLayout_transaction_id)
+        textInputEditTextTransactionID = findViewById(R.id.textInputEditText_transaction_id)
         textInputLayoutTransactionReference =
             findViewById(R.id.textInputLayout_transaction_reference)
         textInputEditTextTransactionReference =
@@ -112,9 +140,12 @@ class MainActivity : AppCompatActivity() {
         textInputLayoutPayeeAmount = findViewById(R.id.textInputLayout_payee_amount)
         textInputEditTextPayeeAmount = findViewById(R.id.textInputEditText_payee_amount)
         textInputLayoutPayeeCurrency = findViewById(R.id.textInputLayout_payee_currency)
-        textInputEditTextPayeeCurrency = findViewById(R.id.textInputEditText_payee_currency)
-        materialTextViewPayeeAppID = findViewById(R.id.materialTextView_payee_app_id)
-        materialTextViewPayeeAppName = findViewById(R.id.materialTextView_payee_app_name)
+        materialAutoCompleteTextViewPayeeCurrency =
+            findViewById(R.id.materialAutoCompleteTextView_payee_currency)
+        textInputLayoutPayeeAppID = findViewById(R.id.textInputLayout_payee_app_id)
+        textInputEditTextPayeeAppID = findViewById(R.id.textInputEditText_payee_app_id)
+        textInputLayoutPayeeAppName = findViewById(R.id.textInputLayout_payee_app_name)
+        textInputEditTextPayeeAppName = findViewById(R.id.textInputEditText_payee_app_name)
         materialButton = findViewById(R.id.materialButton)
     }
 
@@ -426,6 +457,164 @@ class MainActivity : AppCompatActivity() {
         return currentMCCCategory
     }
 
+    private fun configureTransactionIDKeyboard() {
+        textInputEditTextTransactionID.apply {
+            // Use visible password input type for alphanumeric keyboard with numbers first
+            inputType = InputType.TYPE_CLASS_TEXT or
+                    InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD or
+                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or
+                    InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+
+            // IME options for better navigation
+            imeOptions = EditorInfo.IME_ACTION_NEXT or EditorInfo.IME_FLAG_NO_EXTRACT_UI
+
+            // Set single line
+            isSingleLine = true
+            maxLines = 1
+
+            // Custom key listener for alphanumeric input
+            keyListener = android.text.method.DigitsKeyListener.getInstance(
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+            )
+        }
+    }
+
+    private fun setupTransactionIDValidation() {
+        // Configure input type for alphanumeric input with numbers prioritized
+        textInputEditTextTransactionID.apply {
+            // Use textVisiblePassword to show alphanumeric keyboard with numbers first
+            inputType = InputType.TYPE_CLASS_TEXT or
+                    InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD or
+                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+
+            // Set IME options for better UX
+            imeOptions = EditorInfo.IME_ACTION_NEXT
+
+            // Set input filters
+            filters = arrayOf(
+                InputFilter.LengthFilter(35), // Max 35 characters
+                InputFilter { source, start, end, dest, dstart, dend ->
+                    // Allow only alphanumeric characters
+                    val allowedChars =
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                    val filtered = StringBuilder()
+
+                    for (i in start until end) {
+                        val char = source[i]
+                        if (allowedChars.contains(char)) {
+                            // Convert to uppercase for consistency
+                            filtered.append(char.uppercaseChar())
+                        }
+                    }
+
+                    if (filtered.length == end - start) {
+                        null // Accept all characters (already filtered)
+                    } else {
+                        filtered.toString() // Return filtered string
+                    }
+                }
+            )
+
+            // Handle manual editing (mark as no longer generated)
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus && isTransactionIDGenerated) {
+                    // User is about to edit, so it's no longer purely generated
+                    textInputLayoutTransactionID.helperText = "Editing generated ID"
+                }
+            }
+
+            // Add transaction reference text watcher for real-time validation
+            addTextChangedListener(
+                TransactionIDTextWatcher(
+                    textInputLayoutTransactionID,
+                    onValidationChanged = { isValid ->
+                        isTransactionIDValid = isValid
+                        updateButtonState()
+                    },
+                    isGenerated = { isTransactionIDGenerated },
+                )
+            )
+        }
+
+        // Setup trailing icon click listener for generation
+        textInputLayoutTransactionID.setEndIconOnClickListener {
+            generateNewTransactionID()
+        }
+    }
+
+    private fun generateNewTransactionID() {
+        try {
+            // Generate new secure ID
+            val newReference = SecureTransactionIDGenerator.generateID(
+                length = 35,
+                prefix = "MBTID"
+            )
+
+            // Validate the generated reference
+            val validationResult =
+                SecureTransactionIDGenerator.validateGeneratedID(newReference)
+
+            if (validationResult.isValid) {
+                // Set the generated reference
+                textInputEditTextTransactionID.setText(newReference)
+                textInputEditTextTransactionID.setSelection(newReference.length)
+
+                // Mark as generated
+                isTransactionIDGenerated = true
+
+                // Update UI
+                textInputLayoutTransactionID.error = null
+                textInputLayoutTransactionID.helperText =
+                    "Generated secure ID (tap refresh for new)"
+
+                // Update validation state
+                isTransactionIDValid = true
+                updateButtonState()
+
+                // Show generation success feedback
+                showIDGenerationFeedback()
+            } else {
+                textInputLayoutTransactionID.error = "Failed to generate valid ID"
+            }
+        } catch (e: Exception) {
+            textInputLayoutTransactionID.error = "Error generating ID: ${e.message}"
+        }
+    }
+
+    private fun showIDGenerationFeedback() {
+        // Optional: Add subtle animation or feedback
+        textInputLayoutTransactionID.animate()
+            .scaleX(1.05f)
+            .scaleY(1.05f)
+            .setDuration(150)
+            .withEndAction {
+                textInputLayoutTransactionID.animate()
+                    .scaleX(1.0f)
+                    .scaleY(1.0f)
+                    .setDuration(150)
+                    .start()
+            }
+            .start()
+    }
+
+    // Method to get the current transaction reference
+    fun getCurrentTransactionID(): String? {
+        return if (isTransactionIDValid) {
+            textInputEditTextTransactionID.text.toString()
+        } else {
+            null
+        }
+    }
+
+    // Method to check if current reference is generated
+    fun isIDGenerated(): Boolean {
+        return isTransactionIDGenerated
+    }
+
+    /** Returns validated Transaction ID or null */
+    fun getTransactionId(): String? =
+        if (isTransactionIDValid) textInputEditTextTransactionID.text?.toString()?.trim() else null
+
     private fun configureTransactionReferenceKeyboard() {
         textInputEditTextTransactionReference.apply {
             // Use visible password input type for alphanumeric keyboard with numbers first
@@ -438,7 +627,7 @@ class MainActivity : AppCompatActivity() {
             imeOptions = EditorInfo.IME_ACTION_NEXT or EditorInfo.IME_FLAG_NO_EXTRACT_UI
 
             // Set single line
-            setSingleLine(true)
+            isSingleLine = true
             maxLines = 1
 
             // Custom key listener for alphanumeric input
@@ -742,13 +931,240 @@ class MainActivity : AppCompatActivity() {
         // Could show a dialog with common note templates for user selection
     }
 
+    private fun setupCurrencyDropdown() {
+        // Get all available currencies
+        val currencies = CurrencyValidator.getAllCurrencies()
+
+        // Create adapter
+        currencyAdapter = CurrencyDropdownAdapter(this, currencies)
+        materialAutoCompleteTextViewPayeeCurrency.setAdapter(currencyAdapter)
+
+        // Set item click listener
+        materialAutoCompleteTextViewPayeeCurrency.setOnItemClickListener { _, _, position, _ ->
+            val currency = currencyAdapter.getItem(position)
+            currency?.let {
+                selectCurrency(it)
+            }
+        }
+
+        // Handle manual text input (if user types)
+        materialAutoCompleteTextViewPayeeCurrency.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                validateManualCurrencyInput()
+            }
+        }
+
+        // Show dropdown when clicked
+        materialAutoCompleteTextViewPayeeCurrency.setOnClickListener {
+            if (!materialAutoCompleteTextViewPayeeCurrency.isPopupShowing) {
+                materialAutoCompleteTextViewPayeeCurrency.showDropDown()
+            }
+        }
+    }
+
+    private fun selectCurrency(currency: CurrencyInfo) {
+        selectedCurrency = currency
+        materialAutoCompleteTextViewPayeeCurrency.setText(currency.displayName, false)
+
+        // Update validation state
+        isCurrencyValid = true
+        textInputLayoutPayeeCurrency.error = null
+        textInputLayoutPayeeCurrency.helperText = "Selected: ${currency.symbol} (${currency.code})"
+
+        updateButtonState()
+    }
+
+    private fun setDefaultCurrency(currencyCode: String) {
+        val currency = CurrencyValidator.getCurrencyByCode(currencyCode)
+        currency?.let { selectCurrency(it) }
+    }
+
+    private fun validateManualCurrencyInput() {
+        val inputText = materialAutoCompleteTextViewPayeeCurrency.text.toString().trim()
+
+        if (inputText.isEmpty()) {
+            textInputLayoutPayeeCurrency.error = "Please select a currency"
+            isCurrencyValid = false
+            selectedCurrency = null
+            updateButtonState()
+            return
+        }
+
+        // Try to extract currency code from input
+        val currencyCode = extractCurrencyCode(inputText)
+        val validationResult = CurrencyValidator.validateCurrencyCode(currencyCode)
+
+        if (validationResult.isValid) {
+            val currency = CurrencyValidator.getCurrencyByCode(currencyCode!!)
+            if (currency != null) {
+                selectCurrency(currency)
+            } else {
+                textInputLayoutPayeeCurrency.error = "Currency not found"
+                isCurrencyValid = false
+                selectedCurrency = null
+            }
+        } else {
+            textInputLayoutPayeeCurrency.error = validationResult.errorMessage
+            isCurrencyValid = false
+            selectedCurrency = null
+        }
+
+        updateButtonState()
+    }
+
+    private fun extractCurrencyCode(input: String): String? {
+        // Try to extract 3-letter currency code from various formats
+        return when {
+            input.length == 3 && input.matches(Regex("^[A-Za-z]{3}$")) -> input.uppercase()
+            input.contains(" - ") -> input.substringBefore(" - ").trim().uppercase()
+            input.contains("(") && input.contains(")") -> {
+                val match = Regex("\\(([A-Za-z]{3})\\)").find(input)
+                match?.groupValues?.get(1)?.uppercase()
+            }
+
+            else -> null
+        }
+    }
+
+    // Method to get selected currency
+    fun getSelectedCurrency(): CurrencyInfo? {
+        return selectedCurrency
+    }
+
+    // Method to get currency code
+    fun getSelectedCurrencyCode(): String? {
+        return selectedCurrency?.code
+    }
+
+    // Method to format amount with selected currency
+    fun formatAmountWithCurrency(amount: Double): String? {
+        return selectedCurrency?.let { currency ->
+            CurrencyValidator.formatAmount(amount, currency.code)
+        }
+    }
+
+    private fun setupAppIDValidation() {
+        // attach watcher
+        textInputEditTextPayeeAppID.addTextChangedListener(
+            AppIDTextWatcher(textInputLayoutPayeeAppID) { valid ->
+                isAppIDValid = valid
+                updateButtonState()
+            }
+        )
+
+        updateButtonState()
+    }
+
+    /** Returns validated App-ID or null */
+    fun getPayeeAppID(): String? =
+        if (isAppIDValid) textInputEditTextPayeeAppID.text?.toString()?.trim() else null
+
+    private fun setupAppNameValidation() {
+        // Configure input type for app name with proper capitalization
+        textInputEditTextPayeeAppName.apply {
+            // Set input type for text with word capitalization and auto-complete
+            inputType = InputType.TYPE_CLASS_TEXT or
+                    InputType.TYPE_TEXT_FLAG_CAP_WORDS or
+                    InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE or
+                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+
+            // Set IME options for better UX
+            imeOptions = EditorInfo.IME_ACTION_NEXT
+
+            // Set input filters
+            filters = arrayOf(
+                InputFilter.LengthFilter(50), // Max 50 characters
+                InputFilter { source, start, end, dest, dstart, dend ->
+                    // Allow letters, numbers, spaces, and basic punctuation
+                    val allowedChars =
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,!?()-_&+"
+                    val filtered = StringBuilder()
+
+                    for (i in start until end) {
+                        val char = source[i]
+                        if (allowedChars.contains(char)) {
+                            filtered.append(char)
+                        }
+                    }
+
+                    if (filtered.length == end - start) {
+                        null // Accept all characters
+                    } else {
+                        filtered.toString() // Return filtered string
+                    }
+                }
+            )
+
+            // Add app name text watcher for real-time validation
+            addTextChangedListener(
+                AppNameTextWatcher(
+                    textInputLayoutPayeeAppName,
+                    onValidationChanged = { isValid ->
+                        isAppNameValid = isValid
+                        updateButtonState()
+                    },
+                    onCharacterInfoChanged = { charInfo ->
+                        currentCharacterInfo = charInfo
+                    }
+                ))
+
+            // Set focus change listener for validation when focus is lost
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    validateAppNameOnFocusLoss()
+                }
+            }
+        }
+    }
+
+    private fun validateAppNameOnFocusLoss() {
+        val nameText = textInputEditTextPayeeAppName.text.toString()
+        val validationResult = AppNameValidator.validateAppName(nameText)
+
+        if (!validationResult.isValid) {
+            textInputLayoutPayeeAppName.error = validationResult.errorMessage
+            isAppNameValid = false
+        } else {
+            textInputLayoutPayeeAppName.error = null
+            isAppNameValid = true
+
+            // Format app name if needed
+            val formattedName = AppNameValidator.formatAppName(nameText)
+            if (formattedName != nameText) {
+                textInputEditTextPayeeAppName.setText(formattedName)
+                textInputEditTextPayeeAppName.setSelection(formattedName.length)
+            }
+        }
+        updateButtonState()
+    }
+
+    // Method to get validated app name
+    fun getValidatedAppName(): String? {
+        return if (isAppNameValid) {
+            AppNameValidator.formatAppName(textInputEditTextPayeeAppName.text.toString())
+        } else {
+            null
+        }
+    }
+
+    // Method to get character information
+    fun getAppNameInfo(): CharacterInfo? {
+        return currentCharacterInfo
+    }
+
+    // Method to show app name suggestions (optional feature)
+    private fun showAppNameSuggestions() {
+        val suggestions = AppNameValidator.getAppNameSuggestions()
+        // Could show a dialog with common app name suggestions for user selection
+    }
+
     private fun updateButtonState() {
         materialButton.isEnabled = areOtherFieldsValid()
     }
 
     private fun areOtherFieldsValid(): Boolean {
         // Add validation for other fields as needed
-        return isVPAValid && isNameValid && isMCCValid && isTransactionReferenceValid && isTransactionNoteValid && isAmountValid
+        return isVPAValid && isNameValid && isMCCValid && isTransactionIDValid && isTransactionReferenceValid && isTransactionNoteValid && isAmountValid && isCurrencyValid && isAppIDValid && isAppNameValid
     }
 
     private fun setupButtonState() {

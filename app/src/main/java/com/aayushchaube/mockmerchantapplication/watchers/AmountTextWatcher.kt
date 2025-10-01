@@ -13,14 +13,8 @@ class AmountTextWatcher(
     private val onValidChanged: (Boolean) -> Unit = {}
 ) : TextWatcher {
     private var isEditing = false
-    private val formatter: DecimalFormat = DecimalFormat(
-        "#,##0.##", DecimalFormatSymbols(
-            Locale(
-                "en",
-                "IN"
-            )
-        )
-    )
+    private val formatter: DecimalFormat =
+        DecimalFormat("#,##0.##", DecimalFormatSymbols(Locale("en", "IN")))
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {

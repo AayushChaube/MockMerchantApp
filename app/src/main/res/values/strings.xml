@@ -26,7 +26,12 @@
     <string name="mcc_required">Merchant Category Code is required</string>
     <string name="mcc_out_of_range">MCC must be between 0001 and 9999</string>
     <string name="mcc_reserved_range">This MCC code is in a reserved range</string>
-    <string name="transaction_id">Transaction ID</string>
+    <string name="transaction_id_label">Transaction ID</string>
+    <string name="transaction_id_helper_text">6–30 chars; letters, digits, ‘-’, ‘_’</string>
+    <string name="transaction_id_end_icon_content_description">Generate new transaction ID</string>
+    <string name="transaction_id_required">Transaction ID is required</string>
+    <string name="transaction_id_length_error">Length must be 6–30 chars</string>
+    <string name="transaction_id_format_error">Only letters, digits, ‘-’, ‘_’ allowed</string>
     <string name="transaction_reference_label">Transaction reference</string>
     <string name="transaction_end_icon_content_description">Generate new transaction reference</string>
     <string name="transaction_reference_helper_text">Transaction reference</string>
@@ -51,6 +56,19 @@
     <string name="amount_too_large">Amount cannot exceed ₹1,000,000.00</string>
     <string name="payee_currency_label">Payee currency</string>
     <string name="payee_currency_helper_text">Receiver\'s/Merchant\'s currency</string>
-    <string name="payee_app_id">Payee application ID</string>
-    <string name="payee_app_name">Payee application name</string>
+    <string name="currency_required">Please select a currency</string>
+    <string name="invalid_currency_code">Invalid currency code</string>
+    <string name="currency_not_found">Currency not found</string>
+    <string name="payee_app_id_label">Payee application ID</string>
+    <string name="payee_app_id_helper_text">Receiver\'s/Merchant\'s app ID</string>
+    <string name="payee_app_id_text">com.aayushchaube.mockmerchantapplication</string>
+    <string name="payee_app_name_label">Payee application name</string>
+    <string name="payee_app_name_helper_text">Receiver\'s/Merchant\'s app name</string>
+    <string name="payee_app_name_text">Mock Merchant Application</string>
+    <string name="app_name_required">App name is required</string>
+    <string name="app_name_too_short">App name must be at least 3 characters</string>
+    <string name="app_name_too_long">App name cannot exceed 50 characters</string>
+    <string name="app_name_invalid_characters">App name contains invalid characters</string>
+    <string name="app_name_inappropriate_content">App name contains inappropriate content</string>
+    <string name="app_name_reserved_terms">App name contains reserved terms</string>
 </resources>
