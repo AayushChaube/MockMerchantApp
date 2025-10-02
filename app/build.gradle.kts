@@ -46,6 +46,11 @@ android {
 
     buildTypes {
         debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            resValue("string", "app_name", "Mock Merchant Application (Debug)")
+            resValue("string", "payee_app_id_text", "com.aayushchaube.mockmerchantapplication.debug")
+            resValue("string", "payee_app_name_text", "Mock Merchant Application (Debug)")
             isMinifyEnabled = false
             isDebuggable = true
             isShrinkResources = false
