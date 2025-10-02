@@ -19,3 +19,12 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep your custom classes
+-keep class com.aayushchaube.mockmerchantapplication.** { *; }
+
+# Keep Material Design components
+-keep class com.google.android.material.** { *; }
+
+# Keep View Binding classes
+-keep class * extends androidx.viewbinding.ViewBinding { *; }
